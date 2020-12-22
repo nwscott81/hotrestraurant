@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Tables Page</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+  <script src="https://code.jquery.com/jquery.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+</head>
+<body>
+  <div class="container">
+    <div class="jumbotron">
+      <h1 class="text-center"><span class="fa fa-fire"></span> Hot Restaurant</h1>
+      <hr>
+      <h2 class="text-center">Current Reservations and Waiting List</h2>
+      <br>
+      <div class="text-center">
+        <a href="/make"><button class="btn btn-lg btn-danger"><span class="fa fa-credit-card"></span> Make Reservation</button></a>
+        <a href="/"><button class="btn btn-lg btn-default"><span class="fa fa-home"></span></button></a>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-lg-12">
+        <div class="card">
+          <div class="card-header">
+            <h4>Current Reservations</h4>
+          </div>
+          <div class="card-body">
+            <ul id="tableList" class="list-group"></ul>
+          </div>
+        </div>
+        <div class="card mt-4">
+          <div class="card-header">
+            <h4>Waiting List</h4>
+          </div>
+          <div class="card-body">
+            <ul id="waitList" class="list-group"></ul>
+          </div>
+        </div>
+      </div>
+    </div>
+    <footer class="footer mt-4">
+      <div class="container">
+        <p>Control Panel</p>
+        <p><a href="#" id="clear">Clear Table</a> | <a href="/api/tables">API Table Link</a> | <a href="/api/waitlist">API
+            Wait List</a>
+      </div>
+    </footer>
+  </div>
+</body>
+<script type="text/javascript">
+  function runTableQuery() {
+    $.ajax({ url: "/api/tables", method: "GET" })
+      .then(function(tables) {
+        console.log(tables);
+        console.log("------------------------------------");
+        for (var i = 0; i < tables.length; i++) {
+          var tableList = $("#tableList");
+          var listItem = $("<li class='list-group-item mt-4'>");
+          listItem.append(
+            $("<h2>").text("Table #" + (i + 1)),
+            $("<hr>"),
+            $("<h2>").text("ID: " + tables[i].id),
+            $("<h2>").text("Name: " + tables[i].name),
+            $("<h2>").text("Email: " + tables[i].email),
+            $("<h2>").text("Phone: " + tables[i].phone)
+          );
+          tableList.append(listItem);
+        }
+      });
+  }
+  function runWaitListQuery() {
+    $.ajax({ url: "/api/waitList", method: "GET" })
+      .then(function(waitList) {
+        console.log(waitList);
+        console.log("------------------------------------");
+        for (var i = 0; i < waitList.length; i++) {
+          var waitList = $("#waitList");
+          var listItem = $("<li class='list-group-item mt-4'>");
+          listItem.append(
+            $("<h2>").text("Table #" + (i + 1)),
+            $("<hr>"),
+            $("<h2>").text("ID: " + waitList[i].id),
+            $("<h2>").text("Name: " + waitList[i].name),
+            $("<h2>").text("Email: " + waitList[i].email),
+            $("<h2>").text("Phone: " + waitList[i].phone)
+          );
+          waitList.append(listItem);
+        }
+      });
+  }
+  function clearTable() {
+    alert("Clearing...");
+    $.ajax({ url: "/api/clear", method: "POST" }).then(function() {
+      $("#waitList").empty();
+      $("#tableList").empty();
+    });
+  }
+  $("#clear").on("click", clearTable);
+  runTableQuery();
+  runWaitListQuery();
+</script>
+</html>
